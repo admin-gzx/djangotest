@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}结算 - 淘多多电商平台{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">订单结算</h1>
+
+    <div class="row">
+        <!-- 收货信息 -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>收货信息</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">收件人姓名</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" 
+                                   value="{{ user.get_full_name|default:user.username }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">联系电话</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">收货地址</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">提交订单</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 订单摘要 -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>订单摘要</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for item in cart_items %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ item.product.name }} x {{ item.quantity }}</span>
+                                <span>¥{{ item.get_total_price }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-between fs-5">
+                        <strong>总计:</strong>
+                        <strong class="text-danger">¥{{ total_price }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

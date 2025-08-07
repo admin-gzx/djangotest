@@ -75,9 +75,13 @@
     {% for category in categories|slice:":2" %}
         <section class="mb-5">
             <h2 class="mb-4">
+                 {% if category.slug %}
                 <a href="{% url 'product_list_by_category' category.slug %}" class="text-decoration-none text-dark">
                     {{ category.name }}
                 </a>
+                {% else %}
+                     <span class="text-dark">{{ category.name }}</span>
+                {% endif %}
             </h2>
             <div class="row">
                 {% for product in category.products.all|slice:":4" %}

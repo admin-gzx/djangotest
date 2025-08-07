@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}订单详情 #{{ order.id }} - 淘多多电商平台{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>订单详情 #{{ order.id }}</h1>
+        <span class="fs-5">
+            {% if order.status == 'pending' %}
+                <span class="badge bg-warning">待付款</span>
+            {% elif order.status == 'paid' %}
+                <span class="badge bg-info">已付款</span>
+            {% elif order.status == 'shipped' %}
+                <span class="badge bg-primary">已发货</span>
+            {% elif order.status == 'delivered' %}
+                <span class="badge bg-success">已送达</span>
+            {% else %}
+                <span class="badge bg-danger">已取消</span>
+            {% endif %}
+        </span>
+    </div>
+
+    <div class="row">
+        <!-- 订单信息 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>订单信息</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>订单编号:</strong> {{ order.id }}</p>
+                    <p><strong>创建时间:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+                    <p><strong>更新时间:</strong> {{ order.updated_at|date:"Y-m-d H:i" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 收货信息 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>收货信息</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>收件人:</strong> {{ order.full_name }}</p>
+                    <p><strong>电话:</strong> {{ order.phone }}</p>
+                    <p><strong>地址:</strong> {{ order.address }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 支付信息 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>支付信息</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>订单总金额:</strong> <span class="text-danger fs-5">¥{{ order.total_price }}</span></p>
+                    {% if order.status == 'pending' %}
+                        <button class="btn btn-success mt-2">立即支付</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商品列表 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>商品列表</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>商品</th>
+                            <th>单价</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'product_detail' item.product.id item.product.slug %}" 
+                                       class="text-decoration-none text-dark">
+                                        {{ item.product.name }}
+                                    </a>
+                                </td>
+                                <td>¥{{ item.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>¥{{ item.price|floatformat:2|add:item.quantity|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>总计:</strong></td>
+                            <td><strong>¥{{ order.total_price }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'order_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> 返回订单列表
+    </a>
+{% endblock %}
