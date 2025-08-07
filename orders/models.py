@@ -29,6 +29,18 @@ class Order(models.Model):
     def __str__(self):
         return f"订单 {self.id} - {self.user.username}"
 
+    def save(self, *args, **kwargs):
+        """
+        重写save方法，保存订单时自动计算订单总金额
+        遍历订单关联的订单项，累加它们的小计得到订单总金额
+        """
+        # 先调用父类save方法，确保订单对象能正确创建/更新
+        super().save(*args, **kwargs)
+        # 计算所有订单项的小计之和，作为订单总金额
+        self.total_price = self.items.aggregate(total=models.Sum(models.F('quantity') * models.F('price')))['total'] or 0
+        # 再次调用save，把计算好的总金额存到数据库
+        super().save(*args, **kwargs)
+
 
 class OrderItem(models.Model):
     """订单项目模型"""
@@ -44,6 +56,7 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
 
-    def get_total_price(self):
-        """计算小计"""
+    @property
+    def subtotal(self):
+        """计算小计，用property装饰器，让模板可像属性一样直接调用"""
         return self.quantity * self.price

@@ -141,7 +141,7 @@ def generate_orders(users, products, count=20):
                     quantity=quantity
                 )
                 order_item.save()
-                total_price += order_item.get_total_price()
+                total_price += order_item.subtotal
 
         # 更新订单总金额
         order.total_price = total_price

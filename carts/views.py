@@ -20,18 +20,11 @@ def cart_detail(request):
     }
     return render(request, 'detail.html', context)
 
-
 @login_required
 @transaction.atomic
 def cart_add(request, product_id):
     """添加商品到购物车"""
     product = get_object_or_404(Product, id=product_id, is_active=True)
-
-    response = redirect('cart_detail')
-    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response['Pragma'] = 'no-cache'
-    response['Expires'] = '0'
-    return response
 
     # 检查库存
     if product.stock <= 0:
@@ -53,11 +46,19 @@ def cart_add(request, product_id):
         else:
             cart_item.quantity += 1
             cart_item.save()
+            # 减少库存
+            product.stock -= 1
+            product.save()
             messages.success(request, '商品已添加到购物车')
     else:
+        # 减少库存
+        product.stock -= 1
+        product.save()
         messages.success(request, '商品已添加到购物车')
 
     return redirect('cart_detail')
+
+
 
 
 @login_required
@@ -66,16 +67,23 @@ def cart_update(request, item_id):
     """更新购物车商品数量"""
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
     quantity = int(request.POST.get('quantity', 1))
+    old_quantity = cart_item.quantity
 
     # 检查库存
-    if quantity > cart_item.product.stock:
+    if quantity > cart_item.product.stock + (old_quantity - quantity):
         messages.error(request, f'超过库存限制，当前库存: {cart_item.product.stock}')
         return redirect('cart_detail')
 
     if quantity <= 0:
+        # 恢复库存
+        cart_item.product.stock += cart_item.quantity
+        cart_item.product.save()
         cart_item.delete()
         messages.success(request, '商品已从购物车移除')
     else:
+        # 更新库存
+        cart_item.product.stock += (old_quantity - quantity)
+        cart_item.product.save()
         cart_item.quantity = quantity
         cart_item.save()
         messages.success(request, '购物车已更新')
@@ -83,11 +91,32 @@ def cart_update(request, item_id):
     return redirect('cart_detail')
 
 
+
 @login_required
 @transaction.atomic
 def cart_remove(request, item_id):
     """从购物车移除商品"""
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
+    # 恢复库存
+    cart_item.product.stock += cart_item.quantity
+    cart_item.product.save()
     cart_item.delete()
     messages.success(request, '商品已从购物车移除')
+    return redirect('cart_detail')
+
+
+
+
+@login_required
+@transaction.atomic
+def cart_clear(request):
+    """清空购物车"""
+    cart_items = CartItem.objects.filter(user=request.user)
+    # 恢复所有商品库存
+    for item in cart_items:
+        item.product.stock += item.quantity
+        item.product.save()
+    # 删除购物车项
+    cart_items.delete()
+    messages.success(request, '购物车已清空')
     return redirect('cart_detail')
