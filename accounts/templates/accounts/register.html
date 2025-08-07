@@ -1,0 +1,53 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}注册 - 用户认证系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">用户注册</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- 用户名 -->
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">用户名</label>
+                        {{ form.username.errors }}
+                        {{ form.username }}  <!-- 移除过滤器 -->
+                    </div>
+
+                    <!-- 邮箱 -->
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">邮箱</label>
+                        {{ form.email.errors }}
+                        {{ form.email }}  <!-- 移除过滤器 -->
+                    </div>
+
+                    <!-- 密码1 -->
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">密码</label>
+                        {{ form.password1.errors }}
+                        {{ form.password1 }}  <!-- 移除过滤器 -->
+                    </div>
+
+                    <!-- 密码2 -->
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">确认密码</label>
+                        {{ form.password2.errors }}
+                        {{ form.password2 }}  <!-- 移除过滤器 -->
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">注册</button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                已有账号？<a href="{% url 'login' %}">登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

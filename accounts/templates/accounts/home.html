@@ -1,0 +1,13 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}主页 - 用户认证系统{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">欢迎回来，{{ user.username }}！</h1>
+    <p class="lead">这是一个使用 Django 和 MySQL 构建的简单用户认证系统。</p>
+    <hr class="my-4">
+    <p>你已成功登录，可以访问这个受保护的页面。</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'logout' %}" role="button">注销</a>
+</div>
+{% endblock %}
