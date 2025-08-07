@@ -60,7 +60,7 @@ def checkout(request):
         'cart_items': cart_items,
         'total_price': total_price
     }
-    return render(request, 'orders/checkout.html', context)
+    return render(request, 'checkout.html', context)
 
 
 @login_required
@@ -71,7 +71,7 @@ def order_list(request):
     context = {
         'orders': orders
     }
-    return render(request, 'orders/list.html', context)
+    return render(request, 'list.html', context)
 
 
 @login_required
@@ -82,4 +82,4 @@ def order_detail(request, order_id):
     context = {
         'order': order
     }
-    return render(request, 'orders/detail.html', context)
+    return render(request, 'detail.html', context)

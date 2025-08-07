@@ -18,7 +18,7 @@ def cart_detail(request):
         'cart_items': cart_items,
         'total_price': total_price
     }
-    return render(request, 'carts/detail.html', context)
+    return render(request, 'detail.html', context)
 
 
 @login_required
