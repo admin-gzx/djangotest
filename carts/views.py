@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.db import transaction 
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -22,9 +22,16 @@ def cart_detail(request):
 
 
 @login_required
+@transaction.atomic
 def cart_add(request, product_id):
     """添加商品到购物车"""
     product = get_object_or_404(Product, id=product_id, is_active=True)
+
+    response = redirect('cart_detail')
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
 
     # 检查库存
     if product.stock <= 0:
@@ -54,6 +61,7 @@ def cart_add(request, product_id):
 
 
 @login_required
+@transaction.atomic
 def cart_update(request, item_id):
     """更新购物车商品数量"""
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
@@ -76,6 +84,7 @@ def cart_update(request, item_id):
 
 
 @login_required
+@transaction.atomic
 def cart_remove(request, item_id):
     """从购物车移除商品"""
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)

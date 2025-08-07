@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render
 
 # Create your views here.
@@ -9,6 +10,7 @@ from .models import Order, OrderItem
 
 
 @login_required
+@transaction.atomic
 def checkout(request):
     """结算页面"""
     cart_items = CartItem.objects.filter(user=request.user)

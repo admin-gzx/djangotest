@@ -1,8 +1,6 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.utils.text import slugify
+import uuid  # 建议在顶部导入，避免重复导入
 
 class Category(models.Model):
     """商品分类模型"""
@@ -22,9 +20,13 @@ class Category(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+        # 仅在slug为空时生成（避免更新时重复添加随机字符串）
+        if not self.slug or self.slug.strip() == '':
+            # 确保基础slug有值（即使名称特殊字符过多）
+            base_slug = slugify(self.name) or 'category'
+            # 添加随机字符串确保唯一性
+            self.slug = f'{base_slug}-{uuid.uuid4().hex[:6]}'
+        super().save(*args, **kwargs)  # 注意缩进，必须在方法内部
 
 
 class Product(models.Model):
@@ -52,7 +54,8 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name) or 'product'
+            self.slug = f'{base_slug}-{uuid.uuid4().hex[:6]}'  # 建议Product也统一用随机字符串确保唯一
         super().save(*args, **kwargs)
 
     def get_final_price(self):
