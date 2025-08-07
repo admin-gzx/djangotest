@@ -21,6 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',  # 添加我们创建的应用
+    'products',
+    'carts',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -35,10 +38,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'user_auth_system.urls'
 
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'accounts' / 'templates'],
+        'DIRS': [BASE_DIR / 'accounts' / 'templates',
+                 BASE_DIR / 'templates'  ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -46,6 +54,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'carts.context_processors.cart_item_count',  # 购物车数量处理器
+                'products.context_processors.categories',  # 分类处理器
             ],
         },
     },

@@ -58,7 +58,4 @@ def logout_view(request):
     return redirect('login')
 
 
-@login_required
-def home(request):
-    """主页视图，需要登录才能访问"""
-    return render(request, 'accounts/home.html')
+
