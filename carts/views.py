@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from products.models import Product
 from .models import CartItem
-
+import logging
+logger = logging.getLogger(__name__)
 
 @login_required
 def cart_detail(request):
@@ -18,7 +19,7 @@ def cart_detail(request):
         'cart_items': cart_items,
         'total_price': total_price
     }
-    return render(request, 'detail.html', context)
+    return render(request, 'carts_detail.html', context)
 
 
 
@@ -53,6 +54,7 @@ def cart_add(request, product_id):
             product.stock -= 1
             product.save()
             messages.success(request, '商品已添加到购物车')
+            logger.info(f'用户 {request.user.username} 添加商品 {product.name} 到购物车，库存从 {product.stock+1} 减少到 {product.stock}')
     else:
         # 减少库存
         product.stock -= 1
@@ -90,6 +92,7 @@ def cart_update(request, item_id):
         cart_item.quantity = quantity
         cart_item.save()
         messages.success(request, '购物车已更新')
+        logger.info(f'用户 {request.user.username} 更新商品 {cart_item.product.name} 数量从 {old_quantity} 到 {quantity}，库存从 {cart_item.product.stock - (old_quantity - quantity)} 调整为 {cart_item.product.stock}')
 
     return redirect('cart_detail')
 

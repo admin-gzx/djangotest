@@ -20,7 +20,7 @@ def product_list(request, category_slug=None):
         'categories': categories,
         'products': products
     }
-    return render(request, 'list.html', context)
+    return render(request, 'products_list.html', context)
 
 
 def product_detail(request, id, slug):
@@ -30,7 +30,7 @@ def product_detail(request, id, slug):
     context = {
         'product': product
     }
-    return render(request, 'detail.html', context)
+    return render(request, 'products_detail.html', context)
 
 
 def product_search(request):
@@ -44,7 +44,7 @@ def product_search(request):
         products = Product.objects.filter(is_active=True)
 
     categories = Category.objects.filter(is_active=True)
-    return render(request, 'list.html', {
+    return render(request, 'products_list.html', {
         'products': products,
         'categories': categories,
         'query': query

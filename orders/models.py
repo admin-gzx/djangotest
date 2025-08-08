@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from products.models import Product
 
 class Order(models.Model):
-    """订单模型"""
+    """订单模型（修复后）"""
     STATUS_CHOICES = (
         ('pending', '待付款'),
         ('paid', '已付款'),
@@ -29,21 +29,13 @@ class Order(models.Model):
     def __str__(self):
         return f"订单 {self.id} - {self.user.username}"
 
-    def save(self, *args, **kwargs):
-        """
-        重写save方法，保存订单时自动计算订单总金额
-        遍历订单关联的订单项，累加它们的小计得到订单总金额
-        """
-        # 先调用父类save方法，确保订单对象能正确创建/更新
-        super().save(*args, **kwargs)
-        # 计算所有订单项的小计之和，作为订单总金额
-        self.total_price = self.items.aggregate(total=models.Sum(models.F('quantity') * models.F('price')))['total'] or 0
-        # 再次调用save，把计算好的总金额存到数据库
-        super().save(*args, **kwargs)
+    # 移除原有的 save() 方法！！！
+    # 原因：总金额应在创建订单时由视图计算（基于购物车），而非依赖订单项反向计算
+    # 若需后续更新总金额（如订单修改），可单独写方法，而非重写 save()
 
 
 class OrderItem(models.Model):
-    """订单项目模型"""
+    """订单项目模型（保持不变）"""
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name="订单")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="商品")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="购买价格")
@@ -58,5 +50,4 @@ class OrderItem(models.Model):
 
     @property
     def subtotal(self):
-        """计算小计，用property装饰器，让模板可像属性一样直接调用"""
         return self.quantity * self.price

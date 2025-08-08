@@ -23,7 +23,7 @@ def register(request):
             return redirect('login')
     else:
         form = RegisterForm()
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'accounts/accounts_register.html', {'form': form})
 
 
 def login_view(request):
@@ -48,7 +48,7 @@ def login_view(request):
                 messages.error(request, '用户名或密码不正确')
     else:
         form = LoginForm()
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/accounts_login.html', {'form': form})
 
 
 def logout_view(request):

@@ -66,7 +66,7 @@ WSGI_APPLICATION = 'user_auth_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gzx-test',  # 数据库名，需要先在MySQL中创建
+        'NAME': 'django_taoduoduo',  # 数据库名，需要先在MySQL中创建
         'USER': 'root',         # 数据库用户名
         'PASSWORD': '123456',  # 数据库密码
         'HOST': 'localhost',    # 数据库主机
