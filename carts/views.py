@@ -20,6 +20,9 @@ def cart_detail(request):
     }
     return render(request, 'detail.html', context)
 
+
+
+
 @login_required
 @transaction.atomic
 def cart_add(request, product_id):

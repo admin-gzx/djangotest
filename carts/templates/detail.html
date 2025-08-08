@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-
-{% block title %}购物车 - 淘多多电商平台{% endblock %}
+{% block title %}我的购物车 - 淘多多电商平台{% endblock %}
 
 {% block content %}
     <h1 class="mb-4">我的购物车</h1>
@@ -20,35 +19,59 @@
                 <tbody>
                     {% for item in cart_items %}
                         <tr>
+                            <!-- 商品信息 + 库存状态 -->
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://picsum.photos/80/80?random={{ item.product.id }}{% endif %}" 
-                                         alt="{{ item.product.name }}" class="me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                    <!-- 商品图片（存在则显示，否则用占位图） -->
+                                    <img
+                                        src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://picsum.photos/80/80?random={{ item.product.id }}{% endif %}"
+                                        alt="{{ item.product.name }}"
+                                        class="me-3"
+                                        style="width: 80px; height: 80px; object-fit: cover;"
+                                    >
                                     <div>
                                         <h6 class="mb-0">
-                                            <a href="{% url 'product_detail' item.product.id item.product.slug %}" 
-                                               class="text-decoration-none text-dark">
+                                            <a
+                                                href="{% url 'product_detail' item.product.id item.product.slug %}"
+                                                class="text-decoration-none text-dark"
+                                            >
                                                 {{ item.product.name }}
                                             </a>
-                                            {% if item.product.stock <= 0 %}
-                                                <span class="badge bg-danger ms-2">缺货</span>
-                                            {% elif item.product.stock < 5 %}
-                                                <span class="badge bg-warning ms-2">库存紧张</span>
-                                            {% endif %}
                                         </h6>
+                                        <!-- 库存状态提示 -->
+                                        {% if item.product.stock <= 0 %}
+                                            <span class="badge bg-danger ms-2">缺货</span>
+                                        {% elif item.product.stock < 5 %}
+                                            <span class="badge bg-warning ms-2">库存紧张</span>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
+
+                            <!-- 单价 -->
                             <td>¥{{ item.product.get_final_price|floatformat:2 }}</td>
+
+                            <!-- 数量调整 + 消息提示 -->
                             <td>
-                                <form action="{% url 'cart_update' item.id %}" method="post" class="d-flex align-items-center"
-                                      onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='更新中...';">
+                                <form
+                                    action="{% url 'cart_update' item.id %}"
+                                    method="post"
+                                    class="d-flex align-items-center"
+                                    onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='更新中...';"
+                                >
                                     {% csrf_token %}
-                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" 
-                                           class="form-control w-25 text-center"
-                                           oninput="if(this.value > {{ item.product.stock }}) {this.value = {{ item.product.stock }}; alert('超过最大库存');}">
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        value="{{ item.quantity }}"
+                                        min="1"
+                                        max="{{ item.product.stock }}"
+                                        class="form-control w-25 text-center"
+                                        oninput="if(this.value > {{ item.product.stock }}) {this.value = {{ item.product.stock }}; alert('超过最大库存');}"
+                                    >
                                     <button type="submit" class="btn btn-sm btn-outline-primary ms-2">更新</button>
                                 </form>
+                                <!-- 错误消息提示 -->
                                 {% if messages %}
                                     {% for message in messages %}
                                         {% if message.tags == 'error' %}
@@ -57,16 +80,25 @@
                                     {% endfor %}
                                 {% endif %}
                             </td>
+
+                            <!-- 小计 -->
                             <td>¥{{ item.get_total_price|floatformat:2 }}</td>
+
+                            <!-- 移除操作 -->
                             <td>
-                                <a href="{% url 'cart_remove' item.id %}" class="btn btn-sm btn-danger" 
-                                   onclick="return confirm('确定要移除该商品吗？')">
+                                <a
+                                    href="{% url 'cart_remove' item.id %}"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('确定要移除该商品吗？')"
+                                >
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
+
+                <!-- 总计 -->
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-end"><strong>总计:</strong></td>
@@ -77,13 +109,17 @@
             </table>
         </div>
 
+        <!-- 操作按钮 -->
         <div class="d-flex justify-content-between mt-4">
             <div>
                 <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> 继续购物
                 </a>
-                <a href="{% url 'cart_clear' %}" class="btn btn-outline-danger ms-2"
-                   onclick="return confirm('确定要清空购物车吗？')">
+                <a
+                    href="{% url 'cart_clear' %}"
+                    class="btn btn-outline-danger ms-2"
+                    onclick="return confirm('确定要清空购物车吗？')"
+                >
                     <i class="fas fa-trash me-1"></i> 清空购物车
                 </a>
             </div>
@@ -92,6 +128,7 @@
             </a>
         </div>
     {% else %}
+        <!-- 空购物车提示 -->
         <div class="alert alert-info">
             您的购物车是空的
             <a href="{% url 'product_list' %}" class="alert-link">去逛逛</a>
