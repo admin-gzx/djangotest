@@ -1,0 +1,177 @@
+# 淘多多电商平台项目文档
+## 项目介绍
+淘多多电商平台是一个基于Django框架开发的完整电子商务系统，支持商品浏览、分类筛选、购物车、订单管理等核心功能。系统采用模块化设计，具有良好的可扩展性和可维护性。
+
+## 技术栈
+- 后端框架 ：Django 4.2.11
+- 数据库 ：MySQL
+- 前端技术 ：HTML、CSS、JavaScript、Bootstrap 5、Font Awesome
+- 开发语言 ：Python 3.13
+## 项目结构
+```
+d:\djangotest/
+├── .idea/
+├── accounts/         # 用户认证模块
+├── carts/            # 购物车模块
+├── orders/           # 订单管理模块
+├── products/         # 商品管理模块
+├── templates/        # 全局模板
+├── user_auth_system/ # 项目配置目录
+└── manage.py         # Django管理脚本
+```
+## 模块分析
+### 1. 用户认证模块 (accounts)
+负责用户的注册、登录、登出等功能。
+
+- 模型 ：暂无自定义模型（使用Django内置User模型）
+- 视图 ：处理用户认证相关逻辑
+- 模板 ：位于 accounts/templates/accounts/ 目录下
+### 2. 商品管理模块 (products)
+负责商品和分类的管理。
+
+- 模型 ：
+  - Category ：商品分类模型
+  - Product ：商品模型
+- 视图 ：
+  - product_list ：商品列表页，支持按分类筛选
+  - product_detail ：商品详情页
+  - product_search ：商品搜索功能
+- 模板 ：
+  - list.html ：商品列表模板
+  - detail.html ：商品详情模板
+### 3. 购物车模块 (carts)
+实现购物车功能，包括添加商品、修改数量、删除商品等。
+
+- 模型 ：
+  - CartItem ：购物车项目模型
+- 视图 ：
+  - cart_detail ：购物车详情页
+  - cart_add ：添加商品到购物车
+  - 其他购物车操作相关视图
+- 模板 ：
+  - detail.html ：购物车详情模板
+- 上下文处理器 ： cart_item_count 提供购物车商品数量
+### 4. 订单管理模块 (orders)
+处理订单的创建、支付、发货等流程。
+
+- 模型 ：
+  - Order ：订单模型
+  - OrderItem ：订单项目模型33
+- 视图 ：
+  - checkout ：结算页面
+  - order_list ：订单列表页
+  - order_detail ：订单详情页
+- 模板 ：
+  - checkout.html ：结算页面模板
+  - list.html ：订单列表模板
+  - detail.html ：订单详情模板
+## 数据模型设计
+### 核心模型关系
+```
+User (Django内置) 1:N Order
+Order 1:N OrderItem
+Product 1:N OrderItem
+Product N:1 Category
+User 1:N CartItem
+Product 1:N CartItem
+```
+### 关键模型字段 商品分类模型 (Category)
+- name ：分类名称
+- slug ：URL别名
+- description ：分类描述
+- is_active ：是否激活
+- created_at ：创建时间
+- updated_at ：更新时间 商品模型 (Product)
+- name ：商品名称
+- slug ：URL别名
+- category ：所属分类
+- price ：价格
+- discount_price ：折扣价
+- stock ：库存
+- image ：商品图片
+- description ：商品描述
+- is_featured ：是否推荐
+- is_active ：是否上架
+- created_at ：创建时间
+- updated_at ：更新时间 订单模型 (Order)
+- user ：用户
+- full_name ：收件人姓名
+- phone ：联系电话
+- address ：收货地址
+- total_price ：订单总金额
+- status ：订单状态（待付款、已付款、已发货、已送达、已取消）
+- created_at ：创建时间
+- updated_at ：更新时间 订单项目模型 (OrderItem)
+- order ：订单
+- product ：商品
+- price ：购买价格
+- quantity ：数量 购物车项目模型 (CartItem)
+- user ：用户
+- product ：商品
+- quantity ：数量
+- created_at ：创建时间
+- updated_at ：更新时间
+## URL配置
+```
+urlpatterns = [
+    path('admin/', admin.site.
+    urls),           # 后台管理
+    path('', home, 
+    name='home'),               # 商城首页
+    path('accounts/', include('accounts.
+    urls')), # 用户认证
+    path('products/', include('products.
+    urls')), # 商品
+    path('cart/', include('carts.
+    urls')),       # 购物车
+    path('orders/', include('orders.
+    urls')),    # 订单
+]
+```
+## 使用说明
+### 环境搭建
+1. 1.
+   克隆项目代码
+2. 2.
+   安装依赖： pip install -r requirements.txt
+3. 3.
+   配置数据库：修改 user_auth_system/settings.py 中的数据库配置
+4. 4.
+   迁移数据库： python manage.py makemigrations 和 python manage.py migrate
+5. 5.
+   创建超级用户： python manage.py createsuperuser
+6. 6.
+   启动开发服务器： python manage.py runserver
+### 访问地址
+- 前台首页： http://127.0.0.1:8000/
+- 后台管理： http://127.0.0.1:8000/admin/
+## 功能特点
+1. 1.
+   商品浏览与搜索
+2. 2.
+   商品分类筛选
+3. 3.
+   用户注册与登录
+4. 4.
+   购物车管理
+5. 5.
+   订单创建与管理
+6. 6.
+   库存管理
+7. 7.
+   商品推荐功能
+## 扩展建议
+1. 1.
+   集成支付系统
+2. 2.
+   添加商品评价功能
+3. 3.
+   实现商品收藏功能
+4. 4.
+   增加用户地址管理
+5. 5.
+   完善后台管理功能
+6. 6.
+   优化搜索功能（如使用Elasticsearch）
+7. 7.
+   添加缓存机制提高性能
