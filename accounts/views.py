@@ -1,13 +1,13 @@
 # 导入Django的render函数，用于渲染模板
-from django.shortcuts import render
-# 导入redirect函数，用于重定向
-from django.shortcuts import redirect
-# 导入用户认证相关函数
-from django.contrib.auth import authenticate, login, logout
 # 导入登录装饰器
-from django.contrib.auth.decorators import login_required
 # 导入消息提示函数
 from django.contrib import messages
+# 导入用户认证相关函数
+from django.contrib.auth import authenticate, login, logout
+# 导入redirect函数，用于重定向
+from django.shortcuts import redirect
+from django.shortcuts import render
+
 # 导入自定义表单
 from .forms import RegisterForm, LoginForm
 
@@ -70,6 +70,7 @@ def login_view(request):
         # 绑定表单数据
         form = LoginForm(request.POST)
         # 验证表单数据
+
         if form.is_valid():
             # 获取用户名和密码
             username = form.cleaned_data['username']
@@ -114,6 +115,3 @@ def logout_view(request):
     messages.info(request, '你已成功注销')
     # 重定向到登录页面
     return redirect('login')
-
-
-
